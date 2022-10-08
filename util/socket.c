@@ -17,7 +17,7 @@ void socket_bind(int sock, const char* ip, const int port)
 {
     // Create an address to bind the socket to.
     struct sockaddr_in address;
-    memset(&address, 0, sizeof address);
+    bzero(&address, sizeof address);
     address.sin_family = AF_INET;
     address.sin_port = htons(port);
 
