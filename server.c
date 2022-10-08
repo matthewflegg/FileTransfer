@@ -2,7 +2,7 @@
 #include "util/socket.h"
 #include <string.h>
 
-#define ARGS_COUNT 4
+#define ARGS_COUNT 5
 #define PORT_MAX_NUMBER 65535
 #define PORT_MIN_NUMBER 5000
 
@@ -12,7 +12,7 @@
  * @param  string: The string to convert to and integer.
  * @retval The string converted to an integer.
  */
-int string_to_int(const char* string);
+int to_int(const char* string);
 
 /**
  * @brief  Check if a port number lies between PORT_MIN_NUMBER and PORT_MAX_NUMBER.
@@ -22,30 +22,43 @@ int string_to_int(const char* string);
  */
 void validate_port(int port);
 
+/**
+ * @brief  The main entry point of the application.
+ * @note   
+ * @param  argc: The number of command line arguments passed.
+ * @param  argv: The command line arguments. Expected in the form ./[executable] <ip> <metadata port> <file port> <queue length>.
+ * @retval 0 on successful execution, -1 or none on failure.
+ */
 int main(int argc, char** argv)
 {
     // Declare variables to be used later.
-    int metadata_socket, file_socket;
-    int metadata_port, file_port;
+    int meta_socket, file_socket;
+    int meta_port, file_port;
+    int queue_length;
     char* ip;
 
-    // Check whether the correct number of command line arguments were passed.
+    // Ensure the correct number of command line arguments have been passed.
     if (argc != ARGS_COUNT) {
-        fprintf(stderr, "ERROR: Invalid number of arguments (%d required).\n", ARGS_COUNT);
+        fprintf(stderr, "ERROR: Incorrect number of arguments (%d expected).\n", ARGS_COUNT);
         exit(EXIT_FAILURE);
     }
 
-    // Assign `ip` and the `*_port` variables values if they are valid.
+    // Assign variable values to their respective command line arguments.
     ip = argv[1];
-    validate_port(metadata_port = string_to_int(argv[2]));
-    validate_port(file_port = string_to_int(argv[3]));
+    meta_socket = to_int(argv[2]);
+    file_socket = to_int(argv[3]);
+    queue_length = argv[4];
 
-    // char* ptr;
-    // metadata_port = (int)strtol(argv[2], &ptr, 10);
-    // file_port = (int)strtol(argv[3], &ptr, 10);
+    // Validate the ports specified to ensure they're in the permitted range.
+    validate_port(meta_socket);
+    validate_port(file_socket);
+
+    // Initialize the sockets by creating them, binding them and instructing them to listen.
+    socket_server_init(meta_socket, ip, meta_port, queue_length);
+    socket_server_init(file_socket, ip, file_port, queue_length);
 }
 
-int string_to_int(const char* string)
+int to_int(const char* string)
 {
     char* end;
     int integer = (int)strtol(string, &end, 10);
