@@ -1,7 +1,6 @@
 #include "util/file.h"
-#include "util/endpoint.h"
+#include "util/socket.h"
 
 int main(void)
 {
-    endpoint_t server, client;
 }
