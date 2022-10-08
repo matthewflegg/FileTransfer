@@ -66,11 +66,3 @@ void socket_connect(int sock, struct sockaddr_in* target_address, socklen_t targ
         exit(EXIT_FAILURE);
     }
 }
-
-void socket_server_init(int* socket_out_param, char* ip, int port, int queue_length)
-{
-    // Handle initialisation here to make the calling code more concise.
-    *socket_out_param = socket_create();
-    socket_bind(*socket_out_param, ip, port);
-    socket_listen(*socket_out_param, queue_length);
-}

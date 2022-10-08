@@ -59,15 +59,4 @@ int socket_accept(int sock, struct sockaddr* address_out_param, socklen_t* addre
  */
 void socket_connect(int sock, struct sockaddr_in* target_address, socklen_t target_address_length);
 
-/**
- * @brief  Creates & binds a socket and instructs it to listen.
- * @note   
- * @param  socket_out_param: Out parameter. This will be asigned a file descriptor integer.
- * @param  ip: The IPv4 address to bind the socket to.
- * @param  port: The port to bind the socket to.
- * @param  queue_length: The number of clients that can wait for a connection with the socket.
- * @retval None
- */
-void socket_server_init(int* socket_out_param, char* ip, int port, int queue_length);
-
 #endif
