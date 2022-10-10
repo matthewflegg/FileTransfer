@@ -87,6 +87,6 @@ void* handle_connection(void* client_socket_pointer)
     save_file(client_socket, file_name);
     printf("    [TID %lu] INFO: Saved file %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
     close(client_socket);
-    printf("    [TID %lu] INFO: Closed client socket (FD: %d).\n", this_thread_id, file_name, client_socket);
+    printf("    [TID %lu] INFO: Closed client socket (FD: %d).\n", this_thread_id, client_socket);
     return NULL;
 }
