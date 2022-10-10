@@ -69,5 +69,6 @@ void send_file(int client_socket, FILE* file_pointer)
         bzero(buffer, BUFFER_SIZE);
     }
 
-    close(file_pointer);
+    // This is necessary to save any modifications made to the file.
+    fclose(file_pointer);
 }
