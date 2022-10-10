@@ -1,6 +1,6 @@
 # File Transfer
 
-A lightweight program that transfers files from a client to a server.
+A lightweight program that transfers files from a client to a server. This is free software under the GNU GPL v3.
 
 Features
 - Send a file to a server
@@ -12,7 +12,7 @@ Future features
 
 ## Usage
 
-This program will only work on Linux (and also BSD although this has not been tested).
+This program will only work on Linux.
 
 - Compile the executables with `make`.
 - Run the server:
@@ -26,13 +26,15 @@ This program will only work on Linux (and also BSD although this has not been te
 
 ## Warning
 
-This program is highly insecure as I haven't added security features yet. Please
+This program is highly insecure as I haven't added many security features yet. Please
 do not use this for anything serious.
 
-Security issues:
+Known security issues:
 - No encryption during transfer
 - No authentication (anyone can send a file to the server)
 - Possible buffer overflow vulnerability
 
 You can probably use this safely on a private home network with people you trust.
 Encrypt your files before sending anything to the server.
+
+This software is a prototype and should be treated as such.
