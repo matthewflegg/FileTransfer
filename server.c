@@ -1,3 +1,4 @@
+#include "util/auth.h"
 #include "util/convert.h"
 #include "util/file.h"
 #include "util/socket.h"
@@ -80,6 +81,12 @@ void* handle_connection(void* client_socket_pointer)
 
     // Get the thread ID of this thread.
     pthread_t this_thread_id = pthread_self();
+
+    // Authenticate the user.
+    char* password_hash[MAX_PASSWORD_LENGTH];
+    receive_password_hash(client_socket, password_hash);
+    overwrite_password_if_none_set(password_hash);
+    validate_password(password_hash);
 
     // Handle the client connection accordingly by saving the file name and then the file contents.
     save_file_name(client_socket, file_name, FILE_NAME_LENGTH_LIMIT);

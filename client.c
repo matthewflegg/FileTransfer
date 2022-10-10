@@ -1,3 +1,4 @@
+#include "util/auth.h"
 #include "util/convert.h"
 #include "util/file.h"
 #include "util/socket.h"
@@ -31,6 +32,11 @@ int main(int argc, char** argv)
     // Connect socket to the server and send file name.
     struct sockaddr_in server_address = socket_get_address(ip, port);
     socket_connect(client_socket, &server_address, sizeof server_address);
+
+    // Prompt for credentials.
+    char* password_hash = get_user_password_input();
+    send_password_hash(client_socket, password_hash);
+
     send_file_name(client_socket, name_to_save_file_with, sizeof name_to_save_file_with);
     printf("INFO: Connected to server with address %s:%d.\n", ip, port);
 
