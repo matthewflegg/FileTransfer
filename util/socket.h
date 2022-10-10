@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
 #include <sys/socket.h>
 
 /**
@@ -28,7 +29,7 @@ int socket_create();
  * @param  port: The port to bind the socket to.
  * @retval None
  */
-void socket_bind(int sock, const char* ip, const int port);
+void socket_bind(int sock, char* ip, int port);
 
 /**
  * @brief  Instructs a socket to listen for connections. Handles errors internally.

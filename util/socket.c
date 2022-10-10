@@ -13,7 +13,7 @@ int socket_create()
     return sock;
 }
 
-void socket_bind(int sock, const char* ip, const int port)
+void socket_bind(int sock, char* ip, int port)
 {
     // Create an address to bind the socket to.
     struct sockaddr_in address = socket_get_address(ip, port);
@@ -25,15 +25,13 @@ void socket_bind(int sock, const char* ip, const int port)
     }
 }
 
-void socket_listen(int sock, const int queue_length)
+void socket_listen(int sock, int queue_length)
 {
     // Instruct the TCP/IP protocol to start listening for connections on this socket.
     if (listen(sock, queue_length) < 0) {
         fprintf(stderr, "ERROR: Could not instruct the socket to listen for connections.\n");
         exit(EXIT_FAILURE);
     }
-
-    return sock;
 }
 
 int socket_accept(int sock, struct sockaddr* address_out_param, socklen_t* address_length_out_param)

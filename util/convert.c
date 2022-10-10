@@ -1,6 +1,6 @@
 #include "convert.h"
 
-int to_int(const char* string)
+int to_int(char* string)
 {
     char* end_pointer;
     int result = (int)strtol(string, &end_pointer, 10);

@@ -1,7 +1,8 @@
-#include <pthread.h>
+#include "util/convert.h"
 #include "util/file.h"
 #include "util/socket.h"
-#include "util/convert.h"
+#include <pthread.h>
+#include <unistd.h>
 
 #define ARGS_COUNT 4            // The number of command line arguments.
 #define PORT_MAX_NUMBER 65535   // Highest port number the server can run on.
@@ -33,7 +34,7 @@ int main(int argc, char** argv)
     // Assign command line arguments to their respective variables.
     char* ip = argv[1];
     int port = to_int(argv[2]);
-    int queue_length = argv[3];
+    int queue_length = to_int(argv[3]);
 
     // Check whether the port lies between the minimum and maximum allowed values.
     if (port < PORT_MIN_NUMBER || port > PORT_MAX_NUMBER) {
@@ -66,7 +67,7 @@ void* handle_connection(void* client_socket_pointer)
 {
     char file_name[FILE_NAME_LENGTH_LIMIT];
     int client_socket = *((int*)client_socket_pointer);
-    free(client_socket);
+    free(client_socket_pointer);
     client_socket_pointer = NULL;  // Prevents dangling pointer errors.
 
     // Handle the client connection accordingly by saving the file name and then the file contents.

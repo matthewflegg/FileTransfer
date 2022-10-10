@@ -10,6 +10,6 @@
  * @param  string: The string to convert to an integer.
  * @retval The string converted to an integer.
  */
-int to_int(const char* string);
+int to_int(char* string);
 
 #endif
