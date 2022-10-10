@@ -58,8 +58,8 @@ int main(int argc, char** argv)
         socklen_t address_size = sizeof client_address;
         int client_socket = socket_accept(server_socket, (struct sockaddr*)&client_address, &address_size);
         char* client_ip_ascii = inet_ntoa(client_address.sin_addr);
-        unsigned short client_port_host_byte_order = ntohs(client_address.sin_port);
-        printf("INFO: Accepted connection from client (FD: %d) (Address: %s:%hu).\n",
+        int client_port_host_byte_order = ntohs(client_address.sin_port);
+        printf("INFO: Accepted connection from client (FD: %d) (Address: %s:%d).\n",
             client_socket, client_ip_ascii, client_port_host_byte_order);
 
         // After a connection has been made with the client, communicate with them in a non-blocking thread
@@ -67,7 +67,7 @@ int main(int argc, char** argv)
         *client_socket_pointer = client_socket;
         pthread_t thread_id;
         pthread_create(&thread_id, NULL, handle_connection, client_socket_pointer);
-        printf("INFO: Created thread (ID %s) to handle client %s:%hu.\n", client_ip_ascii, client_port_host_byte_order);
+        printf("INFO: Created thread (ID %lu) to handle client %s:%d.\n", thread_id, client_ip_ascii, client_port_host_byte_order);
     }
 }
 
@@ -83,9 +83,10 @@ void* handle_connection(void* client_socket_pointer)
 
     // Handle the client connection accordingly by saving the file name and then the file contents.
     save_file_name(client_socket, file_name, FILE_NAME_LENGTH_LIMIT);
-    printf("    [TID %d] INFO: Received file name %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
+    printf("    [TID %lu] INFO: Received file name %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
     save_file(client_socket, file_name);
-    printf("    [TID %d] INFO: Saved file %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
+    printf("    [TID %lu] INFO: Saved file %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
     close(client_socket);
+    printf("    [TID %lu] INFO: Closed client socket (FD: %d).\n", this_thread_id, file_name, client_socket);
     return NULL;
 }
