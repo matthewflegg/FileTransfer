@@ -23,10 +23,18 @@ int main(int argc, char** argv)
     int port = to_int(argv[2]);
     char* name_of_file_to_send = argv[3];
     char* name_to_save_file_with = argv[4];
+
+    // Create a new socket.
     int client_socket = socket_create();
+    printf("INFO: Created socket (FD %d).\n", client_socket);
+
+    // Connect socket to the server and send file name.
     struct sockaddr_in server_address = socket_get_address(ip, port);
     socket_connect(client_socket, &server_address, sizeof server_address);
     send_file_name(client_socket, name_to_save_file_with, sizeof name_to_save_file_with);
+    printf("INFO: Connected to server with address %s:%d.\n", ip, port);
+
+    // Send the file to the server.
     FILE* file;
 
     if ((file = fopen(name_of_file_to_send, "r")) == NULL) {
@@ -35,6 +43,10 @@ int main(int argc, char** argv)
     }
 
     send_file(client_socket, file);
+    printf("INFO: Sent file %s to be saved with name %s.\n", name_of_file_to_send, name_to_save_file_with);
+
+    // Close the socket and exit.
     close(client_socket);
+    printf("INFO: Socket (FD %d) connection to server %s:%d closed.\n", client_socket, ip, port);
     return 0;
 }
