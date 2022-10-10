@@ -49,7 +49,7 @@ void send_file_name(int client_socket, char* file_name, int file_name_length)
     }
 
     // Send the file name to the server's metadata socket where it will be recorded.
-    if (send(client_socket, file_name, file_name_length, 0) < 0) {
+    if (send(client_socket, file_name, FILE_NAME_LENGTH_LIMIT, 0) < 0) {
         fprintf(stderr, "ERROR: Could not send the file name to the specfied socket.\n");
         exit(EXIT_FAILURE);
     }
