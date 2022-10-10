@@ -19,7 +19,11 @@ server.o: server.c $(CDEPS)
 client.o: client.c $(CDEPS)
 	$(CMD) -c client.c $(CDEPS) $(CFLAGS)
 
-.PHONY: clean
+.PHONY: clean clean_bin
 
 clean:
+	rm -rf *.o
+
+clean_bin:
+	rm -rf $(BIN)/*
 	rm -rf *.o
