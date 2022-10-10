@@ -27,4 +27,12 @@ This program will only work on Linux (and also BSD although this has not been te
 ## Warning
 
 This program is highly insecure as I haven't added security features yet. Please
-do not use this for anything serious, or outside of a sandboxed environment.
+do not use this for anything serious.
+
+Security issues:
+- No encryption during transfer
+- No authentication (anyone can send a file to the server)
+- Possible buffer overflow vulnerability
+
+You can probably use this safely on a private home network with people you trust.
+Encrypt your files before sending anything to the server.
