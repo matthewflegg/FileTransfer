@@ -68,4 +68,6 @@ void send_file(int client_socket, FILE* file_pointer)
         // Clean up by setting all bytes in the buffer to zero.
         bzero(buffer, BUFFER_SIZE);
     }
+
+    close(file_pointer);
 }

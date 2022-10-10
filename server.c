@@ -1,19 +1,11 @@
 #include <pthread.h>
 #include "util/file.h"
 #include "util/socket.h"
-#include "util/connection.h"
+#include "util/convert.h"
 
 #define ARGS_COUNT 4            // The number of command line arguments.
 #define PORT_MAX_NUMBER 65535   // Highest port number the server can run on.
 #define PORT_MIN_NUMBER 5000    // Lowest port number the server can run on.
-
-/**
- * @brief  Convert a string to an integer. Includes internal error checking.
- * @note   
- * @param  string: The string to convert to an integer.
- * @retval The string converted to an integer.
- */
-int to_int(const char* string);
 
 /**
  * @brief  A thread function that saves a client's file name and contents.
@@ -35,7 +27,7 @@ int main(int argc, char** argv)
     // Ensure the correct number of command line arguments have been passed.
     if (argc != ARGS_COUNT) {
         fprintf(stderr, "ERROR: Incorrect number of arguments (%d expected).\n", ARGS_COUNT);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     // Assign command line arguments to their respective variables.
@@ -46,7 +38,7 @@ int main(int argc, char** argv)
     // Check whether the port lies between the minimum and maximum allowed values.
     if (port < PORT_MIN_NUMBER || port > PORT_MAX_NUMBER) {
         fprintf(stderr, "ERROR: Port must be between %d and %d.\n", PORT_MIN_NUMBER, PORT_MAX_NUMBER);
-        exit(EXIT_FAILURE);
+        return EXIT_FAILURE;
     }
 
     // Initialize the sockets by creating them, binding them and instructing them to listen.
@@ -68,26 +60,6 @@ int main(int argc, char** argv)
         pthread_t thread_id;
         pthread_create(&thread_id, NULL, handle_connection, client_socket_pointer);
     }
-}
-
-int to_int(const char* string)
-{
-    char* end_pointer;
-    int result = (int)strtol(string, &end_pointer, 10);
-
-    // Check whether the string passed can be converted to a decimal (base 10) number.
-    if (end_pointer == string) {
-        fprintf(stderr, "ERROR: String '%s' is not a decimal number.\n", string);
-        exit(EXIT_FAILURE);
-    }
-
-    // Check whether the string has extra non-convertible characters in it.
-    if (*end_pointer != '\0') {
-        fprintf(stderr, "ERROR: Extra characters in '%s' at the end of input '%s'.\n", string, end_pointer);
-        exit(EXIT_FAILURE);
-    }
-
-    return result;
 }
 
 void* handle_connection(void* client_socket_pointer)

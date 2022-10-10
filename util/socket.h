@@ -59,4 +59,13 @@ int socket_accept(int sock, struct sockaddr* address_out_param, socklen_t* addre
  */
 void socket_connect(int sock, struct sockaddr_in* target_address, socklen_t target_address_length);
 
+/**
+ * @brief  Convert a host IPv4 address and port number to `struct sockaddr_in`.
+ * @note   
+ * @param  ip: The host IPv4 address.
+ * @param  port: The port number.
+ * @retval None
+ */
+struct sockaddr_in socket_get_address(char* ip, int port);
+
 #endif
