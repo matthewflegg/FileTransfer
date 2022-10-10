@@ -13,19 +13,10 @@ int socket_create()
     return sock;
 }
 
-void socket_bind(int sock, const char* ip, const int port)
+void socket_bind(int sock, char* ip, int port)
 {
     // Create an address to bind the socket to.
-    struct sockaddr_in address;
-    bzero(&address, sizeof address);
-    address.sin_family = AF_INET;
-    address.sin_port = htons(port);
-
-    // Convert the IPv4 address from a string to binary.
-    if (inet_aton(ip, &address.sin_addr) <= 0) {
-        fprintf(stderr, "ERROR: Could not convert the IPv4 address %s to binary.\n", ip);
-        exit(EXIT_FAILURE);
-    }
+    struct sockaddr_in address = socket_get_address(ip, port);
 
     // Bind the socket to a host IPv4 address and port number.
     if (bind(sock, (struct sockaddr*)&address, sizeof address) < 0) {
@@ -34,15 +25,13 @@ void socket_bind(int sock, const char* ip, const int port)
     }
 }
 
-void socket_listen(int sock, const int queue_length)
+void socket_listen(int sock, int queue_length)
 {
     // Instruct the TCP/IP protocol to start listening for connections on this socket.
     if (listen(sock, queue_length) < 0) {
         fprintf(stderr, "ERROR: Could not instruct the socket to listen for connections.\n");
         exit(EXIT_FAILURE);
     }
-
-    return sock;
 }
 
 int socket_accept(int sock, struct sockaddr* address_out_param, socklen_t* address_length_out_param)
@@ -67,10 +56,19 @@ void socket_connect(int sock, struct sockaddr_in* target_address, socklen_t targ
     }
 }
 
-void socket_server_init(int* socket_out_param, char* ip, int port, int queue_length)
+struct sockaddr_in socket_get_address(char* ip, int port)
 {
-    // Handle initialisation here to make the calling code more concise.
-    *socket_out_param = socket_create();
-    socket_bind(*socket_out_param, ip, port);
-    socket_listen(*socket_out_param, queue_length);
+    // Create an address from the host and port.
+    struct sockaddr_in address;
+    bzero(&address, sizeof address);
+    address.sin_family = AF_INET;
+    address.sin_port = htons(port);
+
+    // Convert the IPv4 address from a string to binary.
+    if (inet_aton(ip, &address.sin_addr) <= 0) {
+        fprintf(stderr, "ERROR: Could not convert the IPv4 address %s to binary.\n", ip);
+        exit(EXIT_FAILURE);
+    }
+
+    return address;
 }

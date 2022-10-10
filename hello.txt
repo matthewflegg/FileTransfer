@@ -1,0 +1,15 @@
+                                            Port 9090
+                                            127.0.0.1
+                                            Wales
+                                            The world
+                                            The universe
+
+Dear server.exe,
+
+If you received this, it means that we're working! I shall write
+to you again when you move house. I must say that I indeed feel
+a touch of jealousy, as you get to run on an actual server!
+
+Sincerely,
+
+client.exe.

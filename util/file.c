@@ -1,6 +1,6 @@
 #include "file.h"
 
-void save_file_name(int client_metadata_socket, char* file_name_out_param, int file_name_out_param_length)
+void save_file_name(int client_socket, char* file_name_out_param, int file_name_out_param_length)
 {
     // Ensure that the file name to write into has enough characters to contain it.
     if (file_name_out_param_length < FILE_NAME_LENGTH_LIMIT) {
@@ -9,13 +9,13 @@ void save_file_name(int client_metadata_socket, char* file_name_out_param, int f
     }
 
     // Write the file name into the out parameter specified.
-    if (recv(client_metadata_socket, file_name_out_param, FILE_NAME_LENGTH_LIMIT, 0) < 0) {
+    if (recv(client_socket, file_name_out_param, FILE_NAME_LENGTH_LIMIT, 0) < 0) {
         fprintf(stderr, "ERROR: Could not receive file name.\n");
         exit(EXIT_FAILURE);
     }
 }
 
-void save_file(int client_file_socket, char* file_name)
+void save_file(int client_socket, char* file_name)
 {
     FILE* file_pointer;
     char buffer[BUFFER_SIZE];
@@ -28,7 +28,7 @@ void save_file(int client_file_socket, char* file_name)
 
     // Iteratively receive file contents from the client and write into file `BUFFER_SIZE` bytes per pass.
     while (true) {
-        if (recv(client_file_socket, buffer, BUFFER_SIZE, 0) <= 0) {
+        if (recv(client_socket, buffer, BUFFER_SIZE, 0) <= 0) {
             break;
         }
 
@@ -40,7 +40,7 @@ void save_file(int client_file_socket, char* file_name)
     fclose(file_pointer);
 }
 
-void send_file_name(int client_metadata_socket, char* file_name, int file_name_length)
+void send_file_name(int client_socket, char* file_name, int file_name_length)
 {
     // Ensure the file name does not exceed the max length (OS dependent).
     if (file_name_length > FILE_NAME_LENGTH_LIMIT) {
@@ -49,23 +49,26 @@ void send_file_name(int client_metadata_socket, char* file_name, int file_name_l
     }
 
     // Send the file name to the server's metadata socket where it will be recorded.
-    if (send(client_metadata_socket, file_name, file_name_length, 0) < 0) {
+    if (send(client_socket, file_name, file_name_length, 0) < 0) {
         fprintf(stderr, "ERROR: Could not send the file name to the specfied socket.\n");
         exit(EXIT_FAILURE);
     }
 }
 
-void send_file(int client_file_socket, FILE* file_pointer)
+void send_file(int client_socket, FILE* file_pointer)
 {
     char buffer[BUFFER_SIZE];
 
     // Iteratively read the contents of the file into `buffer` and send it to the server's file socket.
     while (fgets(buffer, BUFFER_SIZE, file_pointer) != NULL) {
-        if (send(client_file_socket, buffer, BUFFER_SIZE, 0) < 0) {
+        if (send(client_socket, buffer, BUFFER_SIZE, 0) < 0) {
             break;
         }
 
         // Clean up by setting all bytes in the buffer to zero.
         bzero(buffer, BUFFER_SIZE);
     }
+
+    // This is necessary to save any modifications made to the file.
+    fclose(file_pointer);
 }

@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <strings.h>
 #include <sys/socket.h>
 
 /**
@@ -28,7 +29,7 @@ int socket_create();
  * @param  port: The port to bind the socket to.
  * @retval None
  */
-void socket_bind(int sock, const char* ip, const int port);
+void socket_bind(int sock, char* ip, int port);
 
 /**
  * @brief  Instructs a socket to listen for connections. Handles errors internally.
@@ -60,14 +61,12 @@ int socket_accept(int sock, struct sockaddr* address_out_param, socklen_t* addre
 void socket_connect(int sock, struct sockaddr_in* target_address, socklen_t target_address_length);
 
 /**
- * @brief  Creates & binds a socket and instructs it to listen.
+ * @brief  Convert a host IPv4 address and port number to `struct sockaddr_in`.
  * @note   
- * @param  socket_out_param: Out parameter. This will be asigned a file descriptor integer.
- * @param  ip: The IPv4 address to bind the socket to.
- * @param  port: The port to bind the socket to.
- * @param  queue_length: The number of clients that can wait for a connection with the socket.
+ * @param  ip: The host IPv4 address.
+ * @param  port: The port number.
  * @retval None
  */
-void socket_server_init(int* socket_out_param, char* ip, int port, int queue_length);
+struct sockaddr_in socket_get_address(char* ip, int port);
 
 #endif
