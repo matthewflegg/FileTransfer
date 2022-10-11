@@ -2,6 +2,17 @@
 
 char* get_user_password_input()
 {
+    // Get settings of the terminal currently displayed
+    static struct termios new_terminal, old_terminal;
+    tcgetattr(STDIN_FILENO, &old_terminal);
+
+    // Do not echo the characters typed in
+    new_terminal = old_terminal;
+    new_terminal.c_lflag &= ~(ECHO);
+
+    // Set the options specified above as the new terminal options
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_terminal);
+
     char* password = malloc(MAX_PASSWORD_LENGTH);
     printf("ENTER A PASSWORD: ");
     

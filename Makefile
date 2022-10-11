@@ -1,17 +1,19 @@
 CMD = gcc
 BIN = ./bin
+LIBS = -lcrypt
 CFLAGS = -Wextra -Wall -march=native -O3
 UTIL = ./util
-CDEPS = $(UTIL)/convert.c $(UTIL)/file.c $(UTIL)/socket.c
-ODEPS = convert.o file.o socket.o
+
+CDEPS = $(UTIL)/convert.c $(UTIL)/file.c $(UTIL)/socket.c $(UTIL)/auth.c
+ODEPS = convert.o file.o socket.o auth.o
 
 all: server client clean
 
 server: server.o $(ODEPS)
-	$(CMD) -o $(BIN)/server server.o $(ODEPS)
+	$(CMD) $(LIBS) -o $(BIN)/server server.o $(ODEPS)
 
 client: client.o $(ODEPS)
-	$(CMD) -o $(BIN)/client client.o $(ODEPS)
+	$(CMD) $(LIBS) -o $(BIN)/client client.o $(ODEPS)
 
 server.o: server.c $(CDEPS)
 	$(CMD) -c server.c $(CDEPS) $(CFLAGS)

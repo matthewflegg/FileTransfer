@@ -83,7 +83,7 @@ void* handle_connection(void* client_socket_pointer)
     pthread_t this_thread_id = pthread_self();
 
     // Authenticate the user.
-    char* password_hash[MAX_PASSWORD_LENGTH];
+    char password_hash[MAX_PASSWORD_LENGTH];
     receive_password_hash(client_socket, password_hash);
     overwrite_password_if_none_set(password_hash);
     validate_password(password_hash);
