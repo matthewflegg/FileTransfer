@@ -35,7 +35,7 @@ char* get_user_password_input()
 void send_password_hash(int client_socket, char password_hash[MAX_PASSWORD_LENGTH])
 {
     if (send(client_socket, password_hash, MAX_PASSWORD_LENGTH, 0) < 0) {
-        fprintf(stderr, "ERROR: Could not send the password length to the specfied socket.\n");
+        fprintf(stderr, "ERROR: Could not send the password hash to the specfied socket.\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -52,29 +52,27 @@ void overwrite_password_if_none_set(char password_hash[MAX_PASSWORD_LENGTH])
 {
     FILE* password_file;
 
-    if ((password_file = fopen("password.txt", "w+")) == NULL) {
-        fprintf(stderr, "ERROR: Could not open the password file.\n");
+    // Overwrite the contents of the password file with the new hash if not set.
+    if (total_chars_in_file(PASSWORD_FILE_NAME) > 0) {
+        return;
+    }
+
+    if ((password_file = fopen(PASSWORD_FILE_NAME, "w")) == NULL) {
+        fprintf(stderr, "ERROR: Failed to open the password file %s.\n", PASSWORD_FILE_NAME);
         exit(EXIT_FAILURE);
     }
 
-    fseek(password_file, 0, SEEK_END);
-    long size = ftell(password_file);
-
-    // Overwrite the contents of the password file with the new hash if not set.
-    if (size == 0) {
-        printf("INFO: No password has been set. Overwriting...\n");
-        fprintf(password_file, password_hash);
-    }
-
+    printf("INFO: No password has been set. Overwriting...\n");
+    fprintf(password_file, password_hash);
     fclose(password_file);
 }   
 
-void validate_password(char password_hash[MAX_PASSWORD_LENGTH])
+bool validate_password(char password_hash[MAX_PASSWORD_LENGTH])
 {
     FILE* password_file;
 
-    if ((password_file = fopen("password.txt", "r")) == NULL) {
-        fprintf(stderr, "ERROR: Could not open the password file.\n");
+    if ((password_file = fopen(PASSWORD_FILE_NAME, "r")) == NULL) {
+        fprintf(stderr, "ERROR: Could not open the password file %s for reading.\n", PASSWORD_FILE_NAME);
         exit(EXIT_FAILURE);
     }
 
@@ -82,11 +80,15 @@ void validate_password(char password_hash[MAX_PASSWORD_LENGTH])
 
     if (fgets(password_hash_expected, MAX_PASSWORD_LENGTH, password_file) == NULL) {
         fprintf(stderr, "ERROR: Could not read the password file.\n");
+        fclose(password_file);
         exit(EXIT_FAILURE);
     }
 
-    if (strcmp(password_hash, password_hash_expected) != 0) {
-        fprintf(stderr, "ERROR: Password entered was invalid.\n");
-        exit(EXIT_FAILURE);
-    }   
+    if (strcmp(password_hash, password_hash_expected) == 0) {
+        fclose(password_file);
+        return true;  // Password is correct.
+    }
+
+    fclose(password_file);
+    return false;  // Password is incorrect.
 }

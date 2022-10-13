@@ -5,6 +5,9 @@
 #include <unistd.h>
 
 #define ARGS_COUNT 5
+#define BUFFER_SIZE 1024
+
+void auth_user(int client_socket);
 
 /**
  * @brief  The main entry point of the application.
@@ -33,10 +36,10 @@ int main(int argc, char** argv)
     struct sockaddr_in server_address = socket_get_address(ip, port);
     socket_connect(client_socket, &server_address, sizeof server_address);
 
-    // Prompt for credentials.
-    char* password_hash = get_user_password_input();
-    send_password_hash(client_socket, password_hash);
+    // Authenticate.
+    auth_user(client_socket);
 
+    // Send the file name to the server.
     send_file_name(client_socket, name_to_save_file_with, sizeof name_to_save_file_with);
     printf("INFO: Connected to server with address %s:%d.\n", ip, port);
 
@@ -54,5 +57,22 @@ int main(int argc, char** argv)
     // Close the socket and exit.
     close(client_socket);
     printf("INFO: Socket (FD %d) connection to server %s:%d closed.\n", client_socket, ip, port);
-    return 0;
+    return EXIT_SUCCESS;
+}
+
+void auth_user(int client_socket)
+{
+    // Prompt for credentials.
+    char* password_hash = get_user_password_input();
+    send_password_hash(client_socket, password_hash);
+
+    // Print the server's response to the authentication attempt.
+    char auth_result[BUFFER_SIZE];
+
+    if (recv(client_socket, auth_result, BUFFER_SIZE, 0) < 0) {
+        fprintf(stderr, "ERROR: Could not receive authentication response from the server.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("\n%s", auth_result);
 }

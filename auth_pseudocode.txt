@@ -1,0 +1,12 @@
+SERVER:
+
+In Makefile:
+    - New target: install
+    - Requires sudo, create /etc/serverauth.txt
+    - Create default password, store hash in file
+
+Events or 'interactions'
+    - Send file interaction
+    - Auth interaction
+
+Event loop needed

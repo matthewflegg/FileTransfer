@@ -9,10 +9,12 @@
 #define SOCKET_H
 
 #include <arpa/inet.h>
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strings.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 /**
  * @brief  Create a new socket. Handles errors internally.
@@ -68,5 +70,14 @@ void socket_connect(int sock, struct sockaddr_in* target_address, socklen_t targ
  * @retval None
  */
 struct sockaddr_in socket_get_address(char* ip, int port);
+
+/**
+ * @brief  Close a connection with the client
+ * @note
+ * @param  sock: The client socket to close
+ * @param  thread_id: The thread the client socket is being closed in.
+ * @retval None
+*/
+void socket_close_client(int sock, pthread_t thread_id);
 
 #endif

@@ -72,3 +72,9 @@ struct sockaddr_in socket_get_address(char* ip, int port)
 
     return address;
 }
+
+void socket_close_client(int sock, pthread_t thread_id)
+{
+    close(sock);
+    printf("    [TID %lu] INFO: Closed client socket (FD: %d).\n", thread_id, sock);
+}

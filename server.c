@@ -3,7 +3,6 @@
 #include "util/file.h"
 #include "util/socket.h"
 #include <pthread.h>
-#include <unistd.h>
 
 #define ARGS_COUNT 4            // The number of command line arguments.
 #define PORT_MAX_NUMBER 65535   // Highest port number the server can run on.
@@ -16,6 +15,10 @@
  * @retval NULL
  */
 void* handle_connection(void* client_socket_pointer);
+
+bool auth_user(int client_socket);
+
+void send_auth_result(int client_socket, char* auth_result);
 
 /**
  * @brief  The main entry point of the application.
@@ -82,18 +85,41 @@ void* handle_connection(void* client_socket_pointer)
     // Get the thread ID of this thread.
     pthread_t this_thread_id = pthread_self();
 
-    // Authenticate the user.
-    char password_hash[MAX_PASSWORD_LENGTH];
-    receive_password_hash(client_socket, password_hash);
-    overwrite_password_if_none_set(password_hash);
-    validate_password(password_hash);
+    // Authenticate the user
+    if (!auth_user(client_socket)) {
+        socket_close_client(client_socket, this_thread_id);
+        return NULL;
+    }
 
     // Handle the client connection accordingly by saving the file name and then the file contents.
     save_file_name(client_socket, file_name, FILE_NAME_LENGTH_LIMIT);
     printf("    [TID %lu] INFO: Received file name %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
     save_file(client_socket, file_name);
     printf("    [TID %lu] INFO: Saved file %s from client (FD: %d).\n", this_thread_id, file_name, client_socket);
-    close(client_socket);
-    printf("    [TID %lu] INFO: Closed client socket (FD: %d).\n", this_thread_id, client_socket);
+    socket_close_client(client_socket, this_thread_id);
     return NULL;
+}
+
+bool auth_user(int client_socket)
+{
+    char password_hash[MAX_PASSWORD_LENGTH];
+    receive_password_hash(client_socket, password_hash);
+    overwrite_password_if_none_set(password_hash);
+
+    // Send a message to the user containing the result of the authentication attempt.
+    if (validate_password(password_hash)) {
+        send_auth_result(client_socket, "INFO: Successfully authenticated with the server.\n");
+        return true;
+    }
+
+    send_auth_result(client_socket, "ERROR: Authentication failure.\n");
+    return false;
+}
+
+void send_auth_result(int client_socket, char* auth_result)
+{
+    if (send(client_socket, auth_result, strlen(auth_result), 0) < 0) {
+        fprintf(stderr, "ERROR: Failed to send an authentication response to the client.\n");
+        exit(EXIT_FAILURE);
+    }
 }

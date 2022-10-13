@@ -50,7 +50,7 @@ void send_file_name(int client_socket, char* file_name, int file_name_length)
 
     // Send the file name to the server's metadata socket where it will be recorded.
     if (send(client_socket, file_name, FILE_NAME_LENGTH_LIMIT, 0) < 0) {
-        fprintf(stderr, "ERROR: Could not send the file name to the specfied socket.\n");
+        fprintf(stderr, "INFO: Socket connnection closed due to authentication failue. Exiting...\n");
         exit(EXIT_FAILURE);
     }
 }
@@ -71,4 +71,19 @@ void send_file(int client_socket, FILE* file_pointer)
 
     // This is necessary to save any modifications made to the file.
     fclose(file_pointer);
+}
+
+long total_chars_in_file(char* file_name)
+{
+    FILE* file_pointer;
+
+    if ((file_pointer = fopen(file_name, "r")) == NULL) {
+        fprintf(stderr, "ERROR: Could not open %s for reading.\n", file_name);
+        exit(EXIT_FAILURE);
+    }
+
+    fseek(file_pointer, 0, SEEK_END);
+    long size = ftell(file_pointer);
+    fclose(file_pointer);
+    return size;
 }

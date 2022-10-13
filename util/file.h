@@ -48,4 +48,12 @@ void send_file_name(int client_socket, char* file_name, int file_name_length);
  */
 void send_file(int client_socket, FILE* file_pointer);
 
+/**
+ * @brief  Return the number of characters in a given file.
+ * @note
+ * @param  file_name: The name of the file
+ * @retval The number of characters in the file.
+*/
+long total_chars_in_file(char* file_name);
+
 #endif
